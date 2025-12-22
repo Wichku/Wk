@@ -51,8 +51,12 @@
 
         .star {
             position: absolute;
-            background: white;
-            border-radius: 50%;
+            /* Default styles overridden by JS for specific types */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            user-select: none;
         }
 
         /* Glassmorphism Styles (Preserved) */
@@ -240,7 +244,7 @@
                         </div>
                     </a>
 
-                    <!-- Wk-ordle -->
+                    <!-- Wk Wordle -->
                     <a href="https://wichku.github.io/wordle/" target="_blank" class="block group relative">
                         <div class="absolute inset-0 bg-blue-500/20 rounded-3xl opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500"></div>
                         
@@ -256,6 +260,26 @@
                             <h4 class="text-xl font-bold text-slate-100 mb-3 group-hover:text-blue-300 transition-colors drop-shadow-sm">Wk-ordle</h4>
                             <p class="text-slate-400 leading-relaxed group-hover:text-slate-200 transition-colors">
                                 A classic, fun game featuring custom modes and new features. Enjoy unlimited play without ads.
+                            </p>
+                        </div>
+                    </a>
+
+                    <!-- Christmas unbox! -->
+                    <a href="https://wichku.github.io/Chistmas-unbox/" target="_blank" class="block group relative">
+                        <div class="absolute inset-0 bg-blue-500/20 rounded-3xl opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500"></div>
+                        
+                        <div class="glass-card rounded-3xl p-8 h-full card-hover relative overflow-hidden group-hover:shadow-[0_0_60px_rgba(59,130,246,0.5)]">
+                            <div class="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-2 group-hover:translate-x-0 duration-300 delay-75">
+                                <i data-lucide="arrow-up-right" class="w-6 h-6 text-blue-300 drop-shadow-[0_0_8px_rgba(147,197,253,0.8)]"></i>
+                            </div>
+
+                            <div class="w-14 h-14 bg-blue-900/40 border border-blue-500/30 text-blue-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                                <i data-lucide="gift" class="w-7 h-7"></i>
+                            </div>
+                            
+                            <h4 class="text-xl font-bold text-slate-100 mb-3 group-hover:text-blue-300 transition-colors drop-shadow-sm">Christmas unbox!</h4>
+                            <p class="text-slate-400 leading-relaxed group-hover:text-slate-200 transition-colors">
+                                A cool Christmas-themed photo guessing game to play with friends. The perfect choice for holiday parties!
                             </p>
                         </div>
                     </a>
@@ -329,27 +353,28 @@
                     sizeRange: [0.5, 1.5], // Smallest
                     speed: 0.05,       // Moves slowest (Background)
                     zIndex: -3,
-                    opacity: 0.4,
-                    glow: 2
+                    opacity: 0.5,      // Slightly increased opacity
+                    glow: 4            // Increased glow
                 },
                 { 
                     count: 70, 
                     sizeRange: [1.5, 3], // Medium
                     speed: 0.2,        // Medium speed
                     zIndex: -2,
-                    opacity: 0.7,
-                    glow: 4
+                    opacity: 0.8,      // Increased opacity
+                    glow: 6            // Increased glow
                 },
                 { 
                     count: 30, 
-                    sizeRange: [3, 5], // Biggest
+                    sizeRange: [1.5, 2.5], // Biggest - Reduced by 50% (was [3, 5])
                     speed: 0.5,        // Moves fastest (Foreground)
                     zIndex: -1,
                     opacity: 1,
-                    glow: 8
+                    glow: 12           // Stronger glow
                 }
             ];
 
+            const starSymbols = ['✶', '✷', '✹'];
             const body = document.body;
 
             layers.forEach((config, index) => {
@@ -363,13 +388,34 @@
                     const star = document.createElement('div');
                     star.className = 'star';
                     
-                    // Random size
-                    const size = Math.random() * (config.sizeRange[1] - config.sizeRange[0]) + config.sizeRange[0];
+                    // Random base size calculation
+                    const baseSize = Math.random() * (config.sizeRange[1] - config.sizeRange[0]) + config.sizeRange[0];
                     
-                    star.style.width = `${size}px`;
-                    star.style.height = `${size}px`;
+                    // 30% chance to be a special symbol
+                    if (Math.random() < 0.3) {
+                        const symbol = starSymbols[Math.floor(Math.random() * starSymbols.length)];
+                        star.innerText = symbol;
+                        
+                        // Scale font size to be visible (symbols need to be larger than pixels to show detail)
+                        // Layer 1 needs minimum visibility, Layer 3 can be large
+                        // Reduced by 50% as requested (was max(10, baseSize * 6))
+                        const fontSize = Math.max(5, baseSize * 3); 
+                        
+                        star.style.fontSize = `${fontSize}px`;
+                        // Enhanced Text Shadow for Symbols
+                        star.style.textShadow = `0 0 ${config.glow}px rgba(255, 255, 255, 1), 0 0 ${config.glow * 2.5}px rgba(255, 255, 255, 0.6)`;
+                        star.style.background = 'transparent';
+                    } else {
+                        // Regular round dot star
+                        star.style.width = `${baseSize}px`;
+                        star.style.height = `${baseSize}px`;
+                        star.style.background = 'white';
+                        star.style.borderRadius = '50%';
+                        // Enhanced Box Shadow for Dots
+                        star.style.boxShadow = `0 0 ${config.glow}px rgba(255, 255, 255, 0.9), 0 0 ${config.glow * 1.5}px rgba(255, 255, 255, 0.5)`;
+                    }
+                    
                     star.style.opacity = config.opacity;
-                    star.style.boxShadow = `0 0 ${config.glow}px rgba(255, 255, 255, 0.8)`;
                     
                     // Random Position (distributed over the tall container)
                     const top = Math.random() * 100; // % of 200vh height

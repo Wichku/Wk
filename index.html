@@ -407,12 +407,28 @@
                         star.style.background = 'transparent';
                     } else {
                         // Regular round dot star
-                        star.style.width = `${baseSize}px`;
-                        star.style.height = `${baseSize}px`;
+                        // Decrease circle size by 30% from previous 1.5 factor -> 1.05
+                        const circleSize = baseSize * 1.05;
+                        
+                        star.style.width = `${circleSize}px`;
+                        star.style.height = `${circleSize}px`;
                         star.style.background = 'white';
                         star.style.borderRadius = '50%';
+                        
                         // Enhanced Box Shadow for Dots
-                        star.style.boxShadow = `0 0 ${config.glow}px rgba(255, 255, 255, 0.9), 0 0 ${config.glow * 1.5}px rgba(255, 255, 255, 0.5)`;
+                        // Randomly make some stars glow significantly more
+                        let glowAmount = config.glow;
+                        const randomVal = Math.random();
+                        
+                        if (randomVal < 0.05) {
+                             // 5% chance for "even more" glow
+                            glowAmount *= 3; 
+                        } else if (randomVal < 0.25) {
+                             // 20% chance (cumulative) for "more" glow
+                            glowAmount *= 1.5;
+                        }
+
+                        star.style.boxShadow = `0 0 ${glowAmount}px rgba(255, 255, 255, 0.9), 0 0 ${glowAmount * 1.5}px rgba(255, 255, 255, 0.5)`;
                     }
                     
                     star.style.opacity = config.opacity;
